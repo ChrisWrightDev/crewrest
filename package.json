@@ -9,12 +9,22 @@
     "test": "echo \"No test specified\" && exit 0"
   },
   "dependencies": {
+    "@capacitor/android": "3.2.5",
+    "@capacitor/app": "1.0.5",
+    "@capacitor/core": "3.2.5",
+    "@capacitor/haptics": "1.1.2",
+    "@capacitor/ios": "3.2.5",
+    "@capacitor/keyboard": "1.1.2",
+    "@capacitor/status-bar": "1.0.5",
     "@quasar/extras": "^1.0.0",
+    "cordova-plugin-ionic": "5.5.1",
     "core-js": "^3.6.5",
     "quasar": "^2.0.0"
   },
   "devDependencies": {
-    "@quasar/app": "^3.0.0"
+    "@capacitor/cli": "3.2.5",
+    "@quasar/app": "^3.0.0",
+    "@vue/cli-service": "4.5.14"
   },
   "browserslist": [
     "last 10 Chrome versions",

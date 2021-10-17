@@ -1,0 +1,7 @@
+{
+  "name": "crewrest",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "vue"
+}

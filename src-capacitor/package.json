@@ -1,0 +1,12 @@
+{
+  "name": "crewrest",
+  "version": "0.0.1",
+  "description": "A Crew Rest calculator",
+  "author": "Chris Wright <webadmin@kreweofbowlegs.com>",
+  "private": true,
+  "dependencies": {
+    "@capacitor/android": "^2.5.0",
+    "@capacitor/cli": "^2.0.0",
+    "@capacitor/core": "^2.0.0"
+  }
+}
