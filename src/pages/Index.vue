@@ -1,0 +1,216 @@
+<template>
+  <q-page class="">
+    <q-form class="q-pa-md" v-if="!tableGenerated" @submit.prevent="generateTable">
+      <div class="q-gutter-sm row">
+        <q-input filled standout v-model="starttime" mask="time" label="Start Time" :rules="['time']" clearable>
+        </q-input>
+      </div>
+      <div class="q-gutter-sm row">
+        <q-input filled standout v-model="endtime" mask="time" label="End Time" :rules="['time']" clearable>
+        </q-input>
+      </div>
+      <div class="q-gutter-sm row">
+        <q-input filled standout v-model="timeBetween" label="Time Between" mask="time" :rules="['time']" />
+      </div>
+      <div class="q-gutter-md row">
+        <q-select filled standout v-model="schedule" label="Rest Schedule" :options="scheduleOptions" style="width: 100%" dense
+          behavior="menu" :rules="value => value.length() > 0 || 'Must Select a Schedule'" />
+      </div>
+      <div class="q-gutter-lg row">
+        <q-select filled standout v-model="constraint" label="Contraint" :options="constraintOptions" style="width: 100%" dense
+          behavior="menu" />
+      </div>
+      <div class="q-gutter-sm row">
+        <q-input filled standout v-model="constraintValue" label="Enter Time" mask="time" clearable/>
+      </div>
+      <div class="q-gutter-sm row">
+        <q-btn primary type="submit" label="Generate" />
+      </div>
+    </q-form>
+    <div class="q-pa-md" v-if="tableGenerated">
+      <div class="row">
+        <div class="col-6">Rest Period</div>
+        <div class="col-6">Start - End</div>
+      </div>
+      <div class="row" v-for="(row,i) in timeTable" :key="i">
+        <div class="col-6">{{ i }}</div>
+        <div class="col-6">{{ row }}</div>
+      </div>
+      <q-btn primary @click="tableGenerated = false" label="Back"/>
+    </div>
+  </q-page>
+</template>
+
+<script>
+  export default {
+    data() {
+      return {
+        tableGenerated: false,
+        starttime : '03:30',
+        endtime : '06:00',
+        timeBetween : '00:10',
+        schedule : '',
+        scheduleOptions : [{
+          label: '3 Equal',
+          value: 'threeEqual'
+        }, {
+          label: '4 Equal',
+          value: 'fourEqual'
+        }, {
+          label: 'SLLS',
+          value: 'slls'
+        }],
+        constraint : '',
+        constraintOptions : ['', 'Long Rest Equals', 'Short Rest Equals', 'Long Rest Max', 'Long Rest Min',
+          'Short Rest Max', 'Short Rest Min'
+        ],
+        constraintValue : '',
+        timeTable : [],
+      }
+    },
+
+    methods: {
+
+      generateTable() {
+        let {
+          startMinutes,
+          endMinutes
+        } = this.normalize()
+        let totalTime = endMinutes - startMinutes
+
+        this.timeTable = eval('this.' + this.schedule.value + '(totalTime, startMinutes)')
+
+        this.tableGenerated = true
+      },
+
+      threeEqual(totalTime, start) {
+        let interval = this.toMinutes(this.timeStringToTime(this.timeBetween))
+        let long = Math.floor((totalTime - 2 * interval) / 3)
+        let short = 0
+        let first = this.timeToTimeString(start) + ' - ' + this.timeToTimeString(start + long)
+        start += (long + interval)
+        let second = this.timeToTimeString(start) + ' - ' + this.timeToTimeString(start + long)
+        start += (long + interval)
+        let third = this.timeToTimeString(start) + ' - ' + this.timeToTimeString(start + long)
+        let timeTable = [
+          first,
+          second,
+          third,
+        ]
+        return timeTable
+      },
+
+      fourEqual(totalTime, start) {
+        let interval = this.toMinutes(this.timeStringToTime(this.timeBetween))
+        let long = Math.floor((totalTime - 3 * interval) / 4)
+        let short = 0
+        let first = this.timeToTimeString(start) + ' - ' + this.timeToTimeString(start + long)
+        start += (long + interval)
+        let second = this.timeToTimeString(start) + ' - ' + this.timeToTimeString(start + long)
+        start += (long + interval)
+        let third = this.timeToTimeString(start) + ' - ' + this.timeToTimeString(start + long)
+        start += (long + interval)
+        let fourth = this.timeToTimeString(start) + ' - ' + this.timeToTimeString(start + long)
+        let timeTable = [
+          first,
+          second,
+          third,
+          fourth,
+        ]
+        return timeTable
+      },
+
+      slls(totalTime, start) {
+        let interval = this.toMinutes(this.timeStringToTime(this.timeBetween))
+        let short = Math.floor((totalTime - 3 * interval) / 6)
+        let long = Math.floor((totalTime - 3 * interval - 2 * short) / 2)
+        let cv = this.toMinutes(this.timeStringToTime(this.constraintValue))
+        console.log(this.constraintValue)
+        console.log(cv);
+        
+        
+        switch (this.constraint) {
+          case 'Long Rest Equals': 
+            long = cv
+            short = (Math.floor(totalTime - 3 * interval - 2* long) / 2)
+            break
+          case 'Short Rest Equals':
+            short = cv
+            long = Math.floor((totalTime - 3 * interval - 2 * short) / 2)
+            break
+          case 'Long Rest Max':
+            if (long > cv) long = cv
+            short = (Math.floor(totalTime - 3 * interval - 2* long) / 2)
+            break
+          case 'Short Rest Max':
+            if (short > cv) short = cv
+            long = Math.floor((totalTime - 3 * interval - 2 * short) / 2)
+            break
+          case 'Long Rest Min':
+            if (long < cv) long = cv
+            short = (Math.floor(totalTime - 3 * interval - 2* long) / 2)
+            break
+          case 'Short Rest Min':
+            if (short < cv) short = cv
+            long = Math.floor((totalTime - 3 * interval - 2 * short) / 2)
+            break
+        }
+        let first = this.timeToTimeString(start) + ' - ' + this.timeToTimeString(start + short)
+        start += (short + interval)
+        let second = this.timeToTimeString(start) + ' - ' + this.timeToTimeString(start + long)
+        start += (long + interval)
+        let third = this.timeToTimeString(start) + ' - ' + this.timeToTimeString(start + long)
+        start += (long + interval)
+        let fourth = this.timeToTimeString(start) + ' - ' + this.timeToTimeString(start + short)
+        let timeTable = [
+          first,
+          second,
+          third,
+          fourth,
+        ]
+        return timeTable
+      },
+
+      normalize() {
+        let start = this.timeStringToTime(this.starttime);
+        let end = this.timeStringToTime(this.endtime);
+        if (end.minutes < start.minutes) {
+          end.minutes += 60
+          end.hours -= 1
+        }
+        if (end.hours < start.hours) end.hours += 24
+        let startMinutes = this.toMinutes(start)
+        let endMinutes = this.toMinutes(end)
+        return {
+          startMinutes,
+          endMinutes
+        }
+      },
+
+      toMinutes(time) {
+        return time.hours * 60 + time.minutes
+      },
+
+      timeToTimeString(minutes) {
+        let hours = Math.floor(minutes / 60)
+        let mins = minutes - (hours * 60)
+        if (hours > 23) hours -= 24
+        let hoursString = hours < 10 ? "0" + hours.toString() : hours.toString()
+        let minsString = mins < 10 ? "0" + mins.toString() : mins.toString()
+        return hoursString + ":" + minsString
+      },
+
+      timeStringToTime(timeString) {
+        let timeArray = timeString.split(':');
+        let hours = parseInt(timeArray[0])
+        let minutes = parseInt(timeArray[1]);
+
+        return {
+          hours,
+          minutes
+        }
+      }
+    }
+  };
+
+</script>
