@@ -41,12 +41,14 @@
     </q-form>
     <div class="q-mx-md q-pa-md resttable" v-if="tableGenerated">
       <div class="row">
-        <div class="col-6">Rest Period</div>
-        <div class="col-6">Start - End</div>
+        <div class="col-3">Period</div>
+        <div class="col-4">Length</div>
+        <div class="col-5">Start - End</div>
       </div>
       <div class="row" v-for="(row,i) in timeTable" :key="i">
-        <div class="col-6">{{ i }}</div>
-        <div class="col-6">{{ row }}</div>
+        <div class="col-3">{{ i }}</div>
+        <div class="col-4">{{ row[0] }}</div>
+        <div class="col-5">{{ row[1] }}</div>
       </div>
     </div>
   </q-page>
@@ -103,10 +105,11 @@
         let second = this.timeToTimeString(start) + ' - ' + this.timeToTimeString(start + long)
         start += (long + interval)
         let third = this.timeToTimeString(start) + ' - ' + this.timeToTimeString(start + long)
+        let longString = this.timeToTimeString(long)
         let timeTable = [
-          first,
-          second,
-          third,
+          [longString, first],
+          [longString, second],
+          [lolongStringng, third],
         ]
         return timeTable
       },
@@ -122,11 +125,12 @@
         let third = this.timeToTimeString(start) + ' - ' + this.timeToTimeString(start + long)
         start += (long + interval)
         let fourth = this.timeToTimeString(start) + ' - ' + this.timeToTimeString(start + long)
+        let longString = this.timeToTimeString(long)
         let timeTable = [
-          first,
-          second,
-          third,
-          fourth,
+          [longString, first],
+          [longString, second],
+          [longString, third],
+          [longString, fourth],
         ]
         return timeTable
       },
@@ -173,11 +177,13 @@
         let third = this.timeToTimeString(start) + ' - ' + this.timeToTimeString(start + long)
         start += (long + interval)
         let fourth = this.timeToTimeString(start) + ' - ' + this.timeToTimeString(start + short)
+        let longString = this.timeToTimeString(long)
+        let shortString = this.timeToTimeString(short)
         let timeTable = [
-          first,
-          second,
-          third,
-          fourth,
+          [shortString, first],
+          [longString, second],
+          [longString, third],
+          [shortString, fourth],
         ]
         return timeTable
       },
