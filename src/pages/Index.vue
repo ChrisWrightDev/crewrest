@@ -1,33 +1,45 @@
 <template>
-  <q-page class="">
-    <q-form class="q-pa-md" v-if="!tableGenerated" @submit.prevent="generateTable">
+  <q-page style="background-color: light-grey">
+    <q-form class="q-pa-md" @submit.prevent="generateTable">
       <div class="q-gutter-sm row">
-        <q-input filled standout v-model="starttime" mask="time" label="Start Time" :rules="['time']" clearable>
+        <q-input filled standout v-model="starttime" mask="time" label="Start Time" :rules="['time']" clearable dense>
+          <template v-slot:prepend>
+            <q-icon name="schedule" />
+          </template>
         </q-input>
       </div>
       <div class="q-gutter-sm row">
-        <q-input filled standout v-model="endtime" mask="time" label="End Time" :rules="['time']" clearable>
+        <q-input filled standout v-model="endtime" mask="time" label="End Time" :rules="['time']" clearable dense>
+          <template v-slot:prepend>
+            <q-icon name="schedule" />
+          </template>
         </q-input>
       </div>
       <div class="q-gutter-sm row">
-        <q-input filled standout v-model="timeBetween" label="Time Between" mask="time" :rules="['time']" />
+        <q-input filled standout v-model="timeBetween" label="Time Between" mask="time" :rules="['time']" clearable dense>
+          <template v-slot:prepend>
+            <q-icon name="schedule" />
+          </template>
+        </q-input>
       </div>
       <div class="q-gutter-md row">
-        <q-select filled standout v-model="schedule" label="Rest Schedule" :options="scheduleOptions" style="width: 100%" dense
-          behavior="menu" :rules="value => value.length() > 0 || 'Must Select a Schedule'" />
+        <q-select filled standout v-model="schedule" label="Rest Schedule" :options="scheduleOptions"
+          style="width: 100%" dense behavior="menu" :rules="[val => !!val || 'Field is required']" />
       </div>
       <div class="q-gutter-lg row">
-        <q-select filled standout v-model="constraint" label="Contraint" :options="constraintOptions" style="width: 100%" dense
-          behavior="menu" />
+        <div class="col">
+          <q-select filled standout v-model="constraint" stack="Contraint" stack-label="true"
+            :options="constraintOptions" label="Rest Constraint" behavior="menu" dense />
+        </div>
+        <div class="col">
+          <q-input filled standout v-model="constraintValue" label="Enter Time" mask="time" clearable dense />
+        </div>
       </div>
-      <div class="q-gutter-sm row">
-        <q-input filled standout v-model="constraintValue" label="Enter Time" mask="time" clearable/>
-      </div>
-      <div class="q-gutter-sm row">
-        <q-btn primary type="submit" label="Generate" />
+      <div class="q-ma-md row">
+        <q-btn color="primary" type="submit" label="Generate" />
       </div>
     </q-form>
-    <div class="q-pa-md" v-if="tableGenerated">
+    <div class="q-mx-md q-pa-md resttable" v-if="tableGenerated">
       <div class="row">
         <div class="col-6">Rest Period</div>
         <div class="col-6">Start - End</div>
@@ -36,7 +48,6 @@
         <div class="col-6">{{ i }}</div>
         <div class="col-6">{{ row }}</div>
       </div>
-      <q-btn primary @click="tableGenerated = false" label="Back"/>
     </div>
   </q-page>
 </template>
@@ -46,11 +57,11 @@
     data() {
       return {
         tableGenerated: false,
-        starttime : '03:30',
-        endtime : '06:00',
-        timeBetween : '00:10',
-        schedule : '',
-        scheduleOptions : [{
+        starttime: '03:30',
+        endtime: '06:00',
+        timeBetween: '00:10',
+        schedule: '',
+        scheduleOptions: [{
           label: '3 Equal',
           value: 'threeEqual'
         }, {
@@ -60,12 +71,12 @@
           label: 'SLLS',
           value: 'slls'
         }],
-        constraint : '',
-        constraintOptions : ['', 'Long Rest Equals', 'Short Rest Equals', 'Long Rest Max', 'Long Rest Min',
+        constraint: '',
+        constraintOptions: ['', 'Long Rest Equals', 'Short Rest Equals', 'Long Rest Max', 'Long Rest Min',
           'Short Rest Max', 'Short Rest Min'
         ],
-        constraintValue : '',
-        timeTable : [],
+        constraintValue: '',
+        timeTable: [],
       }
     },
 
@@ -127,12 +138,12 @@
         let cv = this.toMinutes(this.timeStringToTime(this.constraintValue))
         console.log(this.constraintValue)
         console.log(cv);
-        
-        
+
+
         switch (this.constraint) {
-          case 'Long Rest Equals': 
+          case 'Long Rest Equals':
             long = cv
-            short = (Math.floor(totalTime - 3 * interval - 2* long) / 2)
+            short = (Math.floor(totalTime - 3 * interval - 2 * long) / 2)
             break
           case 'Short Rest Equals':
             short = cv
@@ -140,7 +151,7 @@
             break
           case 'Long Rest Max':
             if (long > cv) long = cv
-            short = (Math.floor(totalTime - 3 * interval - 2* long) / 2)
+            short = (Math.floor(totalTime - 3 * interval - 2 * long) / 2)
             break
           case 'Short Rest Max':
             if (short > cv) short = cv
@@ -148,7 +159,7 @@
             break
           case 'Long Rest Min':
             if (long < cv) long = cv
-            short = (Math.floor(totalTime - 3 * interval - 2* long) / 2)
+            short = (Math.floor(totalTime - 3 * interval - 2 * long) / 2)
             break
           case 'Short Rest Min':
             if (short < cv) short = cv
@@ -214,3 +225,12 @@
   };
 
 </script>
+
+<style lang="sass">
+  .q-page-container 
+    background-color: black 
+  .q-field__control, .resttable
+    background-color: white !important
+    border-radius: 10px !important
+
+</style>
