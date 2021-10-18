@@ -3,7 +3,7 @@ import { CapacitorConfig } from '@capacitor/cli';
 const config: CapacitorConfig = {
   appId: 'io.ionic.starter',
   appName: 'crewrest',
-  webDir: 'dist',
+  webDir: 'dist/spa',
   bundledWebRuntime: false
 };
 
