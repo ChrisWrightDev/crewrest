@@ -29,11 +29,8 @@ export default defineComponent({
 
 <style lang='sass'>
   .platform-ios
-    .q-page
+    .q-toolbar
       // for your app's header
       padding-top: constant(safe-area-inset-top) // for iOS 11.0
       padding-top: env(safe-area-inset-top) // for iOS 11.2 +
-      // for your app's footer
-      padding-bottom: constant(safe-area-inset-bottom)
-      padding-bottom: env(safe-area-inset-bottom)
 </style>
