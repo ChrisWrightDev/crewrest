@@ -28,8 +28,7 @@
       </div>
       <div class="q-gutter-lg row">
         <div class="col">
-          <q-select filled standout v-model="constraint" stack="Contraint" stack-label="true"
-            :options="constraintOptions" label="Rest Constraint" behavior="menu" dense />
+          <q-select filled standout v-model="constraint" :options="constraintOptions" label="Rest Constraint" behavior="menu" dense />
         </div>
         <div class="col">
           <q-input filled standout v-model="constraintValue" label="Enter Time" mask="time" clearable dense />
@@ -70,8 +69,14 @@
           label: '4 Equal',
           value: 'fourEqual'
         }, {
-          label: 'SLLS',
+          label: 'sLLs',
           value: 'slls'
+        }, {
+          label: 'LLss',
+          value: 'llss'
+        }, {
+          label: 'ssLL',
+          value: 'ssll'
         }],
         constraint: '',
         constraintOptions: ['', 'Long Rest Equals', 'Short Rest Equals', 'Long Rest Max', 'Long Rest Min',
@@ -136,14 +141,70 @@
       },
 
       slls(totalTime, start) {
+        let {short, long, interval} = this.applyContraint(totalTime)
+        let first = this.timeToTimeString(start) + ' - ' + this.timeToTimeString(start + short)
+        start += (short + interval)
+        let second = this.timeToTimeString(start) + ' - ' + this.timeToTimeString(start + long)
+        start += (long + interval)
+        let third = this.timeToTimeString(start) + ' - ' + this.timeToTimeString(start + long)
+        start += (long + interval)
+        let fourth = this.timeToTimeString(start) + ' - ' + this.timeToTimeString(start + short)
+        let longString = this.timeToTimeString(long)
+        let shortString = this.timeToTimeString(short)
+        let timeTable = [
+          [shortString, first],
+          [longString, second],
+          [longString, third],
+          [shortString, fourth],
+        ]
+        return timeTable
+      },
+
+      ssll(totalTime, start) {
+        let {short, long, interval} = this.applyContraint(totalTime)
+        let first = this.timeToTimeString(start) + ' - ' + this.timeToTimeString(start + short)
+        start += (short + interval)
+        let second = this.timeToTimeString(start) + ' - ' + this.timeToTimeString(start + short)
+        start += (short + interval)
+        let third = this.timeToTimeString(start) + ' - ' + this.timeToTimeString(start + long)
+        start += (long + interval)
+        let fourth = this.timeToTimeString(start) + ' - ' + this.timeToTimeString(start + long)
+        let longString = this.timeToTimeString(long)
+        let shortString = this.timeToTimeString(short)
+        let timeTable = [
+          [shortString, first],
+          [shortString, second],
+          [longString, third],
+          [longString, fourth],
+        ]
+        return timeTable
+      },
+
+      llss(totalTime, start) {
+        let {short, long, interval} = this.applyContraint(totalTime)
+        let first = this.timeToTimeString(start) + ' - ' + this.timeToTimeString(start + long)
+        start += (long + interval)
+        let second = this.timeToTimeString(start) + ' - ' + this.timeToTimeString(start + long)
+        start += (long + interval)
+        let third = this.timeToTimeString(start) + ' - ' + this.timeToTimeString(start + short)
+        start += (short + interval)
+        let fourth = this.timeToTimeString(start) + ' - ' + this.timeToTimeString(start + short)
+        let longString = this.timeToTimeString(long)
+        let shortString = this.timeToTimeString(short)
+        let timeTable = [
+          [longString, first],
+          [longString, second],
+          [shortString, third],
+          [shortString, fourth],
+        ]
+        return timeTable
+      },
+
+      applyContraint(totalTime) {
         let interval = this.toMinutes(this.timeStringToTime(this.timeBetween))
         let short = Math.floor((totalTime - 3 * interval) / 6)
         let long = Math.floor((totalTime - 3 * interval - 2 * short) / 2)
         let cv = this.toMinutes(this.timeStringToTime(this.constraintValue))
-        console.log(this.constraintValue)
-        console.log(cv);
-
-
         switch (this.constraint) {
           case 'Long Rest Equals':
             long = cv
@@ -170,22 +231,7 @@
             long = Math.floor((totalTime - 3 * interval - 2 * short) / 2)
             break
         }
-        let first = this.timeToTimeString(start) + ' - ' + this.timeToTimeString(start + short)
-        start += (short + interval)
-        let second = this.timeToTimeString(start) + ' - ' + this.timeToTimeString(start + long)
-        start += (long + interval)
-        let third = this.timeToTimeString(start) + ' - ' + this.timeToTimeString(start + long)
-        start += (long + interval)
-        let fourth = this.timeToTimeString(start) + ' - ' + this.timeToTimeString(start + short)
-        let longString = this.timeToTimeString(long)
-        let shortString = this.timeToTimeString(short)
-        let timeTable = [
-          [shortString, first],
-          [longString, second],
-          [longString, third],
-          [shortString, fourth],
-        ]
-        return timeTable
+        return {short, long, interval}
       },
 
       normalize() {

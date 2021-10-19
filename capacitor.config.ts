@@ -1,7 +1,7 @@
 import { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'io.ionic.starter',
+  appId: 'com.chriswrightdev.crewrest',
   appName: 'crewrest',
   webDir: 'dist/spa',
   bundledWebRuntime: false
